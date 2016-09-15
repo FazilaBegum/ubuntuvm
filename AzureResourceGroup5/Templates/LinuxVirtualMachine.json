@@ -30,28 +30,9 @@
       "metadata": {
         "description": "Password for the Virtual Machine."
       }
-    },
-    "ubuntuOSVersion": {
-      "type": "string",
-      "defaultValue": "14.04.2-LTS",
-      "allowedValues": [
-        "12.04.5-LTS",
-        "14.04.2-LTS",
-        "15.10",
-        "16.04.0-LTS"
-      ],
-      "metadata": {
-        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version. Allowed values: 12.04.5-LTS, 14.04.2-LTS, 15.10, 16.04.0-LTS."
-      }
-    },
-    "dnsLabelPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-      }
     }
-  },
-  
+ },
+
   "variables": {
     "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
     "dataDisk1VhdName": "datadisk1",
@@ -60,11 +41,13 @@
     "OSDiskName": "osdiskforlinuxsimple",
     "nicName": "myVMNic",
     "addressPrefix": "10.0.0.0/16",
+    "ubuntuOSVersion": "14.04.2-LTS",
     "subnetName": "Subnet",
     "subnetPrefix": "10.0.0.0/24",
     "storageAccountType": "Standard_LRS",
     "publicIPAddressName": "myPublicIP",
     "publicIPAddressType": "Dynamic",
+    "dnsLabelPrefix": "ubuntuvm12fazi",
     "vmStorageAccountContainerName": "vhds",
     "vmName": "[parameters('VmName')]",
     "vmSize": "[parameters('vmSize')]",
@@ -94,7 +77,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+          "domainNameLabel": "[variables('dnsLabelPrefix')]"
         }
 
       }
@@ -168,7 +151,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('ubuntuOSVersion')]",
+            "sku": "[variables('ubuntuOSVersion')]",
             "version": "latest"
           },
           "osDisk": {
@@ -210,11 +193,11 @@
   "outputs": {
     "hostname": {
       "type": "string",
-      "value": "[concat(parameters('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
+      "value": "[concat(variables('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
     },
     "sshCommand": {
       "type": "string",
-      "value": "[concat('ssh ', parameters('adminUsername'), '@', parameters('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
+      "value": "[concat('ssh ', parameters('adminUsername'), '@', variables('dnsLabelPrefix'), '.', resourceGroup().location, '.cloudapp.azure.com')]"
     }
   }
 }
